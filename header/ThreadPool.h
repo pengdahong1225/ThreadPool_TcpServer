@@ -1,42 +1,44 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <thread>
-#include <mutex>
+#include <string.h>
 #include <vector>
 #include <queue>
+#include <thread>
+#include <mutex>
+#include <atomic>
 #include <condition_variable>
-#include <Winsock2.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
 class Task
 {
 public:
-    Task(SOCKET sockfd, struct sockaddr_in clitAddr);
+    Task(int sockfd, struct sockaddr_in clitAddr);
     void run();
 private:
-    SOCKET sockfd_;
+    int sockfd_;
     struct sockaddr_in clitAddr_;
 };
 
-/* Ïß³Ì³Ø */
+/* çº¿ç¨‹æ±  */
 class ThreadPool
 {
 public:
     ThreadPool(int count);
-    ~ThreadPool()
-    {
-        stop();
-    }
+    ~ThreadPool();
     void start();
     void stop();
-
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
     void push_task(Task* task);
 private:
     void work();
     std::vector<std::thread> threads;
-    std::queue<Task*> Tasks;         //ÈÎÎñ¶ÓÁÐ£¨ÁÙ½çÇø£©
+    std::queue<Task*> tasks;           //ä»»åŠ¡é˜Ÿåˆ—(ä¸´ç•ŒåŒº)
     std::mutex mtx_;
     std::atomic_bool running_flag;
     std::condition_variable cv_;
 };
-
