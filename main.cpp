@@ -2,7 +2,7 @@
 
 int main()
 {
-    CSockServer server("192.168.1.6", 8888, 100);
+    CSockServer server("121.37.10.164", 8888, 100);
     server.ServerRun();
     return 0;
 }
